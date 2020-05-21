@@ -157,12 +157,34 @@ sales_train[sales_train['item_price'] < 0]
 price_correction = train[(train['shop_id'] == 32) & (train['item_id'] == 2973) & (train['date_block_num'] == 4) & (train['item_price'] > 0)].item_price.median()
 sales_train.loc[sales_train['item_price'] < 0 , 'item_price'] = price_correction
 sales_train.head()
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Generate the feature columns for revenue (item_price * item_cnt_day) , month, year , day of the week, weekday or weekend
 
+# Revenue
+sales_train['revenue'] = sales_train['item_price'] * sales_train['item_cnt_day']
 
+# Month
+sales_train['Month'] = sales_train['date'].dt.strftime('%m')
 
+# Year
+sales_train['Year'] = sales_train['date'].dt.strftime('%Y')
 
+# Day of the week
+sales_train['day_of_week'] = sales_train['date'].dt.dayofweek
 
+# Is weekend or not
+sales_train['is_weekend'] = 0
+sales_train.loc[sales_train['day_of_week'].isin([5,6]),'is_weekend'] = 1
 
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Merging all datasets together for exploratory data analysis
 
+# Merge datasets with the training dataset
+# Merge the sales_train dataset with the shops dataset on the shop_id variable to get the shop_name
+# Merge the sales_train dataset with the items dataset on the item_id variable to get the item_category_id
+# Merge the sales_train dataset with the item_categories dataset to obtain the item category name. Merge on the item_category_id
 
-
+sales_train = pd.merge(sales_train, shops , on ='shop_id', how = 'left')
+sales_train = pd.merge(sales_train,items, on = 'item_id', how = 'left')
+sales_train = pd.merge(sales_train, item_categories, on = 'item_category_id', how = 'left')
+sales_train.columns
