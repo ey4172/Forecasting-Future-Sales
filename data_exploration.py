@@ -140,7 +140,23 @@ print(item_20949_median)
 sales_train = sales_train[sales_train['item_cnt_day'] < 1000]
 # Negative values in the item_cnt_day column indicates that an item has been returned.
 
-
+# Item price column
+sns.boxplot(x = sales_train['item_price'])
+# Information for the top 5 outliers present in the dataset
+sales_train.sort_values(['item_price'],ascending = [False]).head(5)
+# Calculate the median price of item_id 6066 and 11365
+item_6066_median = sales_train[sales_train['item_id'] == 6066]['item_price'].median()
+print(item_6066_median)
+item_11365_median = sales_train[sales_train['item_id'] == 11365]['item_price'].median()
+print(item_11365_median)
+# Item ID 6066 is a clear outlier and should be removed 
+sales_train = sales_train[sales_train['item_price'] < 100000]
+# Observations of rows where the item price is negative
+sales_train[sales_train['item_price'] < 0]
+# Find the median price for item 2973 and impute the negative value with the median price
+price_correction = train[(train['shop_id'] == 32) & (train['item_id'] == 2973) & (train['date_block_num'] == 4) & (train['item_price'] > 0)].item_price.median()
+sales_train.loc[sales_train['item_price'] < 0 , 'item_price'] = price_correction
+sales_train.head()
 
 
 
