@@ -188,3 +188,8 @@ sales_train = pd.merge(sales_train, shops , on ='shop_id', how = 'left')
 sales_train = pd.merge(sales_train,items, on = 'item_id', how = 'left')
 sales_train = pd.merge(sales_train, item_categories, on = 'item_category_id', how = 'left')
 sales_train.columns
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
