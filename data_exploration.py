@@ -113,7 +113,32 @@ shops.loc[shops['city_name'] == '!Якутск', 'city_name'] = 'Якутск'
 shops['city_name_code'] = le.fit_transform(shops['city_name'])
 
 #-------------------------------------------------------------------------------------------------------------------------------------
+# Training Dataset
+# Conduct basic checks and coerce certain columns to suitable datatypes
+sales_train.info()
+sales_train[sales_train.duplicated()]
+sales_train = sales_train.drop_duplicates()
 
+# Coerce the date column of the dataset into a suitable format, shop_id and item_id into categorical variables 
+sales_train['date'] = pd.to_datetime(sales_train['date'],format = '%d.%m.%Y')
+sales_train['shop_id'] = pd.Categorical(sales_train.shop_id)
+sales_train['item_id'] = pd.Categorical(sales_train.item_id)
+
+# Exploring the item_cnt_day column in the dataset
+sns.boxplot(x = sales_train['item_cnt_day'])
+
+# Inspected boxplot shows abnormally high values and thus, rows of these observations are inspected 
+# Information of the items that have the top 5 highest item_cnt_day values
+sales_train.sort_values(['item_cnt_day'],ascending = [False]).head(5)
+
+# Calculate the median sales of item_id 11373 and 20949
+item_11373_median = sales_train[sales_train['item_id'] == 11373]['item_cnt_day'].median()
+print(item_11373_median)
+item_20949_median = sales_train[sales_train['item_id'] == 20949]['item_cnt_day'].median()
+print(item_20949_median)
+# Thus the two values present in the dataset are clear outliers and should be removed 
+sales_train = sales_train[sales_train['item_cnt_day'] < 1000]
+# Negative values in the item_cnt_day column indicates that an item has been returned.
 
 
 
