@@ -230,26 +230,81 @@ plt.show()
 # The produced correlogram plot shows that the time series residuals have low correlation with the lagged versions of itself.
 
 
+# Validating Prediction
+
+# Define the model
+mod = sm.tsa.statespace.SARIMAX(ts, 
+                                order=(0,2,1), 
+                                seasonal_order=(0,1,[],12),   
+                                enforce_stationarity=False,
+                                enforce_invertibility=False)
+results = mod.fit()
+
+# Generate the one step ahead forecasts, forecasts at each point is generated using the full history at a point
+pred = results.get_prediction(start = 1, end = 33, dynamic=False)
+pred_ci = pred.conf_int()
+
+# Evaluation metrics
+def forecast_accuracy(forecast, actual):
+    mape = np.mean(np.abs(forecast - actual)/np.abs(actual))  # MAPE
+    me = np.mean(forecast - actual)             # ME
+    mae = np.mean(np.abs(forecast - actual))    # MAE
+    mpe = np.mean((forecast - actual)/actual)   # MPE
+    rmse = np.mean((forecast - actual)**2)**.5  # RMSE
+    corr = np.corrcoef(forecast, actual)[0,1]   # corr
+    mins = np.amin(np.hstack([forecast[:,None], 
+                              actual[:,None]]), axis=1)
+    maxs = np.amax(np.hstack([forecast[:,None], 
+                              actual[:,None]]), axis=1)
+    minmax = 1 - np.mean(mins/maxs)             # minmax
+    #acf1 = acf(fc-test)[1]                      # ACF1
+    return({'mape':mape, 'me':me, 'mae': mae, 
+            'mpe': mpe, 'rmse':rmse, 
+            'corr':corr, 'minmax':minmax})
 
 
 
 
+# Predicted and original values
+forecast_values = pred.predicted_mean
+actual_values = ts[1:34]
 
+# Model evaluation on the provided training dataset
+forecast_accuracy(forecast_values, actual_values)
 
+# Create a plot of the true and one step ahead forecast values for the given time series
+ax = ts.plot(label='observed')
+pred.predicted_mean.plot(ax=ax, label='SARIMA forecast', alpha=.7)
 
+ax.fill_between(pred_ci.index,
+                pred_ci.iloc[:, 0],
+                pred_ci.iloc[:, 1], color='r', alpha=.1)
 
+ax.set_xlabel('Time (months)')
+ax.set_ylabel('Total Sales')
+plt.legend()
+plt.show()
 
+# Forecast values using the SARIMA model, five months into the future
+n_periods = 5
+fitted, confint = smodel.predict(n_periods=n_periods, return_conf_int=True)
+#index_of_fc = pd.date_range(time_series.index[-1], periods = n_periods, freq='MS')
+index_of_fc = np.arange(len(time_series['item_cnt_month']), len(time_series['item_cnt_month'])+n_periods)
 
+# make series for plotting purpose
+fitted_series = pd.Series(fitted, index=index_of_fc)
+lower_series = pd.Series(confint[:, 0], index=index_of_fc)
+upper_series = pd.Series(confint[:, 1], index=index_of_fc)
 
+# Plot
+plt.plot(time_series.item_cnt_month)
+plt.plot(fitted_series, color='darkgreen')
+plt.fill_between(lower_series.index, 
+                 lower_series, 
+                 upper_series, 
+                 color='k', alpha=.15)
 
+plt.title("SARIMA - Final Forecast for sales of 1C Company")
+plt.show()
 
-
-
-
-
-
-
-
-
-
-
+#The model forecasts a decreasing trend in the sales for the 1C company over the next 5 months with an increased peak during the holiday season
