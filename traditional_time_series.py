@@ -200,7 +200,35 @@ plot_acf(ts.diff(12).dropna(), ax=axes[2])
 plt.show()
 
 # Graphically diagnosing and finding optimal parameters is time consuming. Thus, we find the optimal parameters
-# using the AUTOARIMA method. 
+# using the AUTOARIMA method. This function will fit the SARIMA model over a different combination of parameters and choose the one which minimizes the AIC value. 
+# The AIC value measures the goodness of fit of a model relative to its complexity.
+# It is maximized for models with low complexity but that generalize to the given data well 
+
+import pmdarima as pm
+
+# Seasonal - fit stepwise auto-ARIMA
+smodel = pm.auto_arima(time_series['item_cnt_month'], start_p=1, start_q=1,
+                         test='adf',
+                         max_p=3, max_q=3, m=12,
+                         start_P=0, seasonal=True,
+                         d=None, D=1, trace=True,
+                         error_action='ignore',  
+                         suppress_warnings=True, 
+                         stepwise=True)
+
+smodel.summary()
+ 
+# The coefficients of each of the variables is significant with p-values close to zero.
+# The AIC value is 437.635. We plot the model diagnostics to check for unusual behaviour.
+
+smodel.plot_diagnostics(figsize=(7,7))
+plt.show()
+
+# The standardized residual plot doesn't show any obvious trends and patterns in the produced diagnostic plots.
+# The histogram plus estimated density plot shows us that the kernel density estimation line follows the N(0,1) line. This indicates that the residuals of the model follow the normal distribution.
+# The qq-plot also confirms the normality of residuals 
+# The produced correlogram plot shows that the time series residuals have low correlation with the lagged versions of itself.
+
 
 
 
