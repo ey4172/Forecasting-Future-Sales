@@ -101,6 +101,122 @@ ts_moving_average_diff = ts - moving_average
 ts_moving_average_diff.head(15)
 ts_moving_average_diff.dropna(inplace = True)
 
+# Test to check if the given time series is stationary or not
+dftest = adfuller(ts_moving_average_diff)
+dfoutput = pd.Series(dftest[0:4], index=['Test Statistic','p-value','#Lags Used','Number of Observations Used'])
+for key,value in dftest[4].items():
+    dfoutput['Critical Value (%s)'%key] = value
+print (dfoutput) 
+
+# Dickey Fuller Test shows strong evidence against the NULL hypothesis. P-value obtained (0.0013) indicates that the time series is
+# stationary.
+
+# Exponentially Weighted Moving Average
+# The more recent previous values are given more weight compared to the other values
+# Consider a span of 12 months for the exponential weighted moving average 
+
+mte_exp_wighted_avg = ts.ewm(span=12,adjust = False).mean()
+plt.plot(ts,label = 'Original Time Series')
+plt.plot(mte_exp_wighted_avg, color='red', label = 'Exponential Moving Average')
+plt.xlabel('Time (months)')
+plt.ylabel('Total Sales')
+plt.title('Total Sales for the 1C Company')
+plt.legend(loc = 'best')
+plt.show()
+
+# Test stationarity using the Augumented Dickey Fuller Test
+dftest = adfuller(ts_moving_average_diff)
+dfoutput = pd.Series(dftest[0:4], index=['Test Statistic','p-value','#Lags Used','Number of Observations Used'])
+for key,value in dftest[4].items():
+    dfoutput['Critical Value (%s)'%key] = value
+print (dfoutput) 
+
+# The test statistic and p-values indicate that the transformed test series is stationary.
+
+# Differencing 
+# It is a common transformation technique, the original observation substracted from the previous k instants.
+# This helps in making the series stationary
+
+# Take the first order difference and plot the differenced series with the partial autocorrelation plot
+ts_first_diff = ts.diff()
+fig, axes = plt.subplots(1, 2, sharex=True)
+axes[0].plot(ts_first_diff); axes[0].set_title('First Differencing')
+axes[1].set(ylim=(0,5))
+plot_pacf(ts_first_diff.dropna(), ax=axes[1])
+plt.show()
+
+# Dickey Fuller Test
+adfuller(ts_first_diff.dropna())
+# Confirms stationarity 
+
+# Take seasonal differencing and plot the original series with PACF plot
+ts_seasonal_diff = ts.diff(12)
+fig, axes = plt.subplots(1, 2, sharex=True)
+axes[0].plot(ts_seasonal_diff); axes[0].set_title('Seasonal Differencing')
+axes[1].set(ylim=(0,5))
+plot_pacf(ts_seasonal_diff.dropna(), ax=axes[1])
+plt.show()
+
+# Plotting the original and transformed time series with first order and seasonal differencing
+fig, axes = plt.subplots(2, 1, figsize=(10,5),sharex=True)
+
+# Usual Differencing
+axes[0].plot(ts, label='Original Series')
+axes[0].plot(ts.diff(1), label='Usual Differencing')
+axes[0].set_title('Usual Differencing')
+axes[0].legend(loc='upper right')
+
+
+# Seasonal Differencing 
+axes[1].plot(ts, label='Original Series')
+axes[1].plot(ts.diff(12), label='Seasonal Differencing', color='green')
+axes[1].set_title('Seasonal Differencing')
+plt.legend(loc='upper right')
+plt.suptitle('1-C Company Monthly Sales')
+plt.show()
+
+# Optimal Hyperparameters for the Seasonal ARIMA model
+# For our given time series, we will fit a SARIMA(p,d,q)(P,D,Q) model. 
+# If a time series is stationary then points in a given point of time would not depend on the previous values.
+# It's residuals will resemble white noise
+# If a time series isn't stationary then its values will depend on the previous values that have occurred.
+# For our given model we have to choose the optimal parameters - AR(p) , MA(q) and d .
+# p: It is the number of lags for the dependent variable. If p= 2 then the current value t would depend on the values t-1 and t-2.
+# Moving average term (q): These are the lagged errors in the forecast function.
+# This allows us to model the errors of our current observation as a linear combination of error values observed at previous values. 
+# For eg if q = 2. The given observation t depends on (e-1) and (e-2)th error.
+# where e  is the difference in the actual and predicted values 
+# d: number of past points to substract from the current value 
+
+# Plotting the series, ACF and PACF plot
+plt.rcParams.update({'figure.figsize':(9,7), 'figure.dpi':120})
+
+fig, axes = plt.subplots(3, 1, sharex=True)
+axes[0].plot(ts.diff(12)); axes[0].set_title('Seasonal Differencing')
+axes[1].set(ylim=(0,5))
+plot_pacf(ts.diff(12).dropna(), ax=axes[1])
+axes[2].set(ylim =(0,5))
+plot_acf(ts.diff(12).dropna(), ax=axes[2])
+plt.show()
+
+# Graphically diagnosing and finding optimal parameters is time consuming. Thus, we find the optimal parameters
+# using the AUTOARIMA method. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
