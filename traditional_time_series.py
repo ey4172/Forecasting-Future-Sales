@@ -65,8 +65,41 @@ plt.show()
 # The rolling mean of the series shows a decreasing trend and the standard deviation also peaks around the times where the sales peak
 
 # Conduct the Augumented Dickey Fuller Test 
-# The Null hypothesis of this test assumes that the given time series isn't stationary 
+# The Null hypothesis of this test assumes that the given time series isn't stationary.
+dftest = adfuller(ts, autolag='AIC')
+dfoutput = pd.Series(dftest[0:4], index=['Test Statistic','p-value','#Lags Used','Number of Observations Used'])
+for key,value in dftest[4].items():
+    dfoutput['Critical Value (%s)'%key] = value
+print (dfoutput) 
 
+# For the given time series, the p-value (0.14) shows weak evidence against the NULL hypothesis.  The test statistic obtained
+# also doesn't lie within the critical regions. Thus, we cannot reject the NULL and the time series is not stationary.
+# Since the given time series isn't stationary, we need to transform it so that it becomes amenable for modelling purposes
+
+# TIME SERIES TRANSFORMATION
+# Aggregation - Taking average for a time period like monthly / weekly / daily
+# Smoothing - Taking rolling averages
+# Differencing 
+
+# Moving Average Technique
+# The average of k consecutive values is taken depending on the frequency of the time series. 
+# For the given dataset, consider k = 4 and take the rolling mean for each quarter
+
+# Construct the plot of rolling mean and overlay it with the actual time series
+moving_average = ts.rolling(4).mean()
+plt.plot(ts)
+plt.plot(moving_average, color = 'red')
+plt.xlabel('Cummulative Months')
+plt.ylabel('Total Sales')
+plt.title('Total Sales for the 1C Company')
+plt.show()
+
+# Substract the moving average value from the original series. Since the average of the last 4 months has been taken,
+# rolling mean is not defined for the first 3 values
+
+ts_moving_average_diff = ts - moving_average
+ts_moving_average_diff.head(15)
+ts_moving_average_diff.dropna(inplace = True)
 
 
 
