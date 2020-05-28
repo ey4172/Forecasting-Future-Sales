@@ -7,15 +7,26 @@ A Russian Software Company wishes to forecast its future sales for effective rev
 
 2. **Sample Submission Data**: 'sample_submission.csv'
 
-3. **Test Dataset**: 'test.csv'
+3. **Test Data**: 'test.csv'
 
-4. **Shops Dataset**: 'shops.csv' 
+4. **Shops Data**: 'shops.csv' 
    - Columns: shop_id, shop_name
 
-5. **Items Dataset**: 'items.csv'
+5. **Items Data**: 'items.csv'
    - Columns: item_id, item_category_id, item_name
   
-6. **Item Categories Dataset**: 'item_categories.csv'
+6. **Item Categories Data**: 'item_categories.csv'
    - Columns: item_category_id, item_category_name 
 
+### FILES
+- **traditional_time_series.py** : contains code for time series visualization, transformation and modelling. 
+- **data_exploration.py** : contains code for data cleaning and pre-processing
+- **data_visualization.py** : contains code for data visualization
+- **feature_engineering.py** : contains code for all the created lag features and mean encodings 
+- **baseline_model.py** : contains the simple baseline model for the dataset
+- **hyperparameter_tuning_xgboost.py** : contains code for tuning hyperparameters of the XGBOOST model 
+- **XGBOOST_model.py**: contains code for building the XGBOOST model with tuned parameters and creation of submission files for evaluation
+- **RandomForest.py**: contains code for tuning RF model parameters and the final RF model applied to the test dataset 
 
+### TOOLS & PACKAGES USED
+Numpy, pandas, scipy, itertools, statsmodel, matplotlib, seaborn, sklearn, xgboost, altair, pickle 
