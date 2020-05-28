@@ -29,4 +29,4 @@ A Russian Software Company wishes to forecast its future sales for effective rev
 - **RandomForest.py**: contains code for tuning RF model parameters and the final RF model applied to the test dataset 
 
 ### Tools & Packages 
-Numpy, pandas, scipy, itertools, statsmodel, matplotlib, seaborn, sklearn, xgboost, altair, pickle 
+Numpy, pandas, scipy, itertools, statsmodel, matplotlib, seaborn, sklearn, xgboost, altair, pickle, pmdarima 
