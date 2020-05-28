@@ -3,19 +3,19 @@ A Russian Software Company wishes to forecast its future sales for effective rev
 
 ### DATA
 1. Training Data: 'sales_train.csv'
-   Columns: Date , cummulative date , shop_id , item_id , item_price , item_cnt_day (items sold per day)
+   -Columns: Date , cummulative date , shop_id , item_id , item_price , item_cnt_day (items sold per day)
 
 2. Sample Submission Data: 'sample_submission.csv'
 
 3. Test Dataset: 'test.csv'
 
 4. Shops Dataset: 'shops.csv' 
-  Columns: shop_id, shop_name
+  -Columns: shop_id, shop_name
 
 5. Items Dataset: 'items.csv'
-  Columns: item_id, item_category_id, item_name
+  -Columns: item_id, item_category_id, item_name
   
 6. Item Categories Dataset: 'item_categories.csv'
-  Columns: item_category_id, item_category_name 
+  -Columns: item_category_id, item_category_name 
 
 
